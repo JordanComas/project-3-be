@@ -60,4 +60,21 @@ router.post("/likes/:postId", isAuthenticated, async (req, res) => {
   }
 });
 
+//D
+router.delete("/delete-comment/:postId", isAuthenticated, async (req, res) => {
+  try {
+    console.log(req.params);
+    const removedComment = await Post.findOneAndDelete(
+      {
+        _id: req.params.postId,
+        creatorId: req.user.id,
+      },
+      { new: true }
+    );
+    res.json(removedComment);
+  } catch (err) {
+    res.json(err.message);
+  }
+});
+
 module.exports = router;

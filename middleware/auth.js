@@ -16,7 +16,7 @@ const isAuthenticated = async (req, res, next) => {
     req.user = tokenInfo;
     next();
   } catch (error) {
-    return res.json(error);
+    return res.status(440).json(error);
   }
 };
 

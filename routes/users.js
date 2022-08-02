@@ -44,11 +44,19 @@ router.post("/signup", async (req, res) => {
       expiresIn: "6h",
     });
 
-    res.json(token);
+    res.json({ token: token, id: newUser.id });
   } catch (err) {
     res.status(400).json(err.message);
   }
 });
+
+router.post(
+  "/add-picture",
+  fileUploader.single("imageUrl"),
+  async (req, res) => {
+    res.json(req.file);
+  }
+);
 
 //R
 router.post("/login", async (req, res) => {
@@ -81,18 +89,43 @@ router.post("/login", async (req, res) => {
       expiresIn: "6h",
     });
 
-    res.json(token);
+    res.json({ token: token, id: foundUser.id });
   } catch (err) {
     res.status(400).json(err.message);
   }
 });
 
-router.post(
-  "/add-picture",
-  fileUploader.single("imageUrl"),
-  async (req, res) => {
-    res.json(req.file);
+router.get("/account-details", isAuthenticated, async (req, res) => {
+  try {
+    const allUsers = await User.findById(req.user.id);
+    res.json(allUsers);
+  } catch (err) {
+    res.json(err.message);
   }
-);
+});
+
+//U
+router.post("/update-user", isAuthenticated, async (req, res) => {
+  try {
+    const updateUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { ...req.body },
+      { new: true }
+    );
+    res.json(updateUser);
+  } catch (err) {
+    res.json(err.message);
+  }
+});
+
+//D
+router.delete("/delete-user", isAuthenticated, async (req, res) => {
+  try {
+    const deleteUser = await User.findByIdAndDelete(req.user.id);
+    res.json(deleteUser);
+  } catch (err) {
+    res.json(err.message);
+  }
+});
 
 module.exports = router;
